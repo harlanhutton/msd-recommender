@@ -12,7 +12,7 @@ import os
 
 def main(spark, file_path):
 
-	#os.chdir('hdfs:/user/ahh303/final-project-recommender-systers/')
+	os.chdir('hdfs:/user/ahh303/final-project-recommender-systers/')
 	print(os.getcwd())
 
 	#lines = spark.read.parquet(file_path)
