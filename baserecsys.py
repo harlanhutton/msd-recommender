@@ -12,7 +12,7 @@ def main(spark, file_path):
 
 	lines = spark.read.parquet(file_path)
 	lines.createOrReplaceTempView('lines')
-	print(lines[1:10])
+	#print(lines[1:10])
 
 
 # Only enter this block if we're in main
