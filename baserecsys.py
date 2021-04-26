@@ -14,7 +14,7 @@ def main(spark, file_path):
 	lines = spark.read.parquet(file_path)
 	lines.createOrReplaceTempView('lines')
 	df = lines.sample(fraction=0.01, seed = 1)
-	df.toPandas().to_csv('hdfs:/user/ahh303/train.csv')
+	df.toPandas().to_csv('train.csv')
 
 
 # Only enter this block if we're in main
