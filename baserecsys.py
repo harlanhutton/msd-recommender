@@ -3,7 +3,6 @@ from pyspark.ml.recommendation import ALS
 from pyspark.sql import Row
 
 import sys
-import bench
 
 from pyspark.sql import SparkSession
 import numpy as np
@@ -20,7 +19,7 @@ def main(spark, file_path):
 if __name__ == "__main__":
 
     # Create the spark session object
-    spark = SparkSession.builder.appName('part2').getOrCreate()
+    spark = SparkSession.builder.appName('test').getOrCreate()
 
     # Get file_path for dataset to analyze
     file_path = sys.argv[1]
