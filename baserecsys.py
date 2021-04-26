@@ -6,13 +6,15 @@ import sys
 
 from pyspark.sql import SparkSession
 import numpy as np
+import pandas as pd
 
 
 def main(spark, file_path):
 
 	lines = spark.read.parquet(file_path)
 	lines.createOrReplaceTempView('lines')
-	#print(lines[1:10])
+	df = lines.sample(frac=0.01, replace=False, random_state=1)
+	df.toPandas().to_csv('hdfs:/user/ahh303/train.csv')
 
 
 # Only enter this block if we're in main
