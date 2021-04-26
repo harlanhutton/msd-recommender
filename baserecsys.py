@@ -12,7 +12,11 @@ import os
 
 def main(spark, file_path):
 
+<<<<<<< HEAD
 	os.chdir('hdfs://user/ahh303/final-project-recommender-systers/')
+=======
+	os.chdir('hdfs:/user/hp2233/final-project-recommender-systers/')
+>>>>>>> dd6ee2b2b3ac6dba26da9792683e990ede2d773a
 	print(os.getcwd())
 
 	#lines = spark.read.parquet(file_path)
