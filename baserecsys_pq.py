@@ -16,14 +16,15 @@ def main(spark, file_path):
 
 	#print(os.getcwd())
 
-	lines = spark.read.parquet(file_path)
-	lines.createOrReplaceTempView('lines')
-    print(type(lines), 'lines type')
-    print(lines.shape,'lines shape)
-	df = lines.sample(fraction=0.01, seed = 1)
+    lines = spark.read.parquet(file_path)
+    lines.createOrReplaceTempView('lines')
+    print(type(lines))
+    print(lines.shape)
+    print('lines type and shape')
+    df = lines.sample(fraction=0.01, seed = 1)
     print(type(df), 'dftype')
     print(df.shape, 'shape')
-	df.write.mode('overwrite').parquet(f'hdfs:/user/jke261/test01sample.parquet')
+    df.write.mode('overwrite').parquet(f'hdfs:/user/jke261/test01sample.parquet')
 
 
 # Only enter this block if we're in main
