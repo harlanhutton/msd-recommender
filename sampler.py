@@ -9,11 +9,12 @@ import numpy as np
 import pandas as pd
 
 def main(spark, file_path, pct_sample, netID):
-
+    
+    flt_pct_samp = float(pct_sample) / 100
     lines = spark.read.parquet(file_path)
     lines.createOrReplaceTempView('lines')
 
-    df = lines.sample(fraction=pct_sample, seed = 1)
+    df = lines.sample(fraction=flt_pct_samp, seed = 1)
     df.write.mode('overwrite').parquet(f'hdfs:/user/{netID}/train_sample{pct_sample}.parquet')
     
 
@@ -25,7 +26,7 @@ if __name__ == "__main__":
 
     # Get file_path for dataset to analyze
     file_path = sys.argv[1]
-    pct_sample = float(sys.argv[2])
+    pct_sample = sys.argv[2]
     
     netID = getpass.getuser()
 
