@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     # Get file_path for dataset to analyze
     file_path = sys.argv[1]
-    pct_sample = sys.argv[2]
+    pct_sample = float(sys.argv[2])
     
     netID = getpass.getuser()
 
