@@ -18,7 +18,11 @@ def main(spark, file_path):
 
 	lines = spark.read.parquet(file_path)
 	lines.createOrReplaceTempView('lines')
+    print(type(lines), 'lines type')
+    print(lines.shape,'lines shape)
 	df = lines.sample(fraction=0.01, seed = 1)
+    print(type(df), 'dftype')
+    print(df.shape, 'shape')
 	df.write.mode('overwrite').parquet(f'hdfs:/user/jke261/test01sample.parquet')
 
 
