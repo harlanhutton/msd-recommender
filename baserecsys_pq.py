@@ -19,11 +19,11 @@ def main(spark, file_path):
     lines = spark.read.parquet(file_path)
     lines.createOrReplaceTempView('lines')
     print(type(lines))
-    print(lines.shape)
+    print((lines.count(), len(lines.columns)))
     print('lines type and shape')
     df = lines.sample(fraction=0.01, seed = 1)
     print(type(df), 'dftype')
-    print(df.shape, 'shape')
+    print(df.count(), len(df.columns), 'shape')
     df.write.mode('overwrite').parquet(f'hdfs:/user/jke261/test01sample.parquet')
 
 
