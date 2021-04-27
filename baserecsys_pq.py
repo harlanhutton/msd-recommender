@@ -25,7 +25,11 @@ def main(spark, file_path):
     print(type(df), 'dftype')
     print(df.count(), len(df.columns), 'shape')
     df.write.mode('overwrite').parquet(f'hdfs:/user/jke261/test01sample.parquet')
-
+    
+    
+    re_read = spark.read.parquet(hdfs:/user/jke261/test01sample.parquet)
+    re_read.createOrReplaceTempView('re_read')
+    print(re_read.head(20))
 
 # Only enter this block if we're in main
 if __name__ == "__main__":
