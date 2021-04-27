@@ -8,13 +8,13 @@ from pyspark.sql import SparkSession
 import numpy as np
 import pandas as pd
 
-def main(spark, file_path, pct_sample, net_id):
+def main(spark, file_path, pct_sample, netID):
 
     lines = spark.read.parquet(file_path)
     lines.createOrReplaceTempView('lines')
 
     df = lines.sample(fraction=pct_sample, seed = 1)
-    df.write.mode('overwrite').parquet(f'hdfs:/user/{net_id}/train_sample{pct_sample}.parquet')
+    df.write.mode('overwrite').parquet(f'hdfs:/user/{netID}/train_sample{pct_sample}.parquet')
     
 
 # Only enter this block if we're in main
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     
     netID = getpass.getuser()
 
-    main(spark, file_path, pct_sample, net_id)
+    main(spark, file_path, pct_sample, netID)
