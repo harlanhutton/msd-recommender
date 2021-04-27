@@ -27,7 +27,7 @@ def main(spark, file_path):
     df.write.mode('overwrite').parquet(f'hdfs:/user/jke261/test01sample.parquet')
     
     
-    re_read = spark.read.parquet(hdfs:/user/jke261/test01sample.parquet)
+    re_read = spark.read.parquet('hdfs:/user/jke261/test01sample.parquet')
     re_read.createOrReplaceTempView('re_read')
     print(re_read.head(20))
 
