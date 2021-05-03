@@ -1,14 +1,9 @@
-from pyspark import SparkContext
-sc = SparkContext("count app")
-words = sc.parallelize (
-   ["scala", 
-   "java", 
-   "hadoop", 
-   "spark", 
-   "akka",
-   "spark vs hadoop", 
-   "pyspark",
-   "pyspark and spark"]
-)
-counts = words.count()
-print("Number of elements in RDD -> %i" % (counts))
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.mllib.evaluation import RegressionMetrics, RankingMetrics
+
+spark = SparkSession.builder.appName('SparkByExamples.com').getOrCreate()
+sparkContext=spark.sparkContext
+rdd = sparkContext.parallelize([1,2,3,4,5,6,7,8,9,10])
+metrics = RankingMetrics(rdd)
+rdd.collect()
