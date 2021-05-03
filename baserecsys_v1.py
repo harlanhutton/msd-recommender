@@ -1,7 +1,7 @@
 from pyspark.ml.recommendation import ALS
 from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
-from pyspark.sql.functions import col, explode, func
+import pyspark.sql.functions as func
 from pyspark.mllib.evaluation import RankingMetrics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
@@ -54,7 +54,7 @@ val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
 
 # get predictions for validation users
 val_preds = model.recommendForUserSubset(val_df,1)
-val_preds_explode = val_preds.select(val_preds.user_id_numer,explode(val_preds.recommendations.track_id_numer))
+val_preds_explode = val_preds.select(val_preds.user_id_numer,func.explode(val_preds.recommendations.track_id_numer))
 val_preds_flatten = val_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
 
 # add validation predictions to dictionary
