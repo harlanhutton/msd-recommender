@@ -8,18 +8,23 @@ from pyspark.sql import SparkSession
 import pandas as pd
 import numpy as np
 import sys
+import getpass
 
 
-def main(spark, sc, train_input, test_input, val_input):
+def main(spark, sc, train_input, test_input, val_input,user_id):
+    
+    # set up checkpoints
+    sparkContext = spark.sparkContext
+    sparkContext.setCheckpointDir(f'hdfs:/user/{user_id}/final_project/checkpoints')
 
     # read in data
     trainSample = spark.read.parquet(train_input)
-    testSample = spark.read.parquet(test_input)
+    #testSample = spark.read.parquet(test_input)
     valSample = spark.read.parquet(val_input)
     
     valSample.createOrReplaceTempView('valSample')
     trainSample.createOrReplaceTempView('trainSample')
-    testSample.createOrReplaceTempView('testSample')
+    #testSample.createOrReplaceTempView('testSample')
 
     # StringIndexer to create new columns and dataframes
     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
@@ -82,6 +87,8 @@ def main(spark, sc, train_input, test_input, val_input):
 
     dictcon2= list(map(list, val_true_dict.items()))
     dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
+    
+    dftrue = dftrue.repartition(500)
 
     rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer')
                    .rdd
@@ -103,7 +110,6 @@ if __name__ == "__main__":
     test = sys.argv[2]
     val = sys.argv[3]
     
-    #sc = SparkContext.getOrCreate()
     sc = spark._sc
-
+    
     main(spark, sc, train, test, val)
