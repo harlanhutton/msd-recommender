@@ -81,7 +81,7 @@ def main(spark, sc, train_input, test_input, val_input):
 
     labels = spark.sparkContext.parallelize(labels_list)
     metrics = RankingMetrics(labels)
-    print(metrics.meanAveragePrecision)
+    #print(metrics.meanAveragePrecision)
 
 if __name__ == "__main__":
         # Create the spark session object
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     test = sys.argv[2]
     val = sys.argv[3]
     
-    sc = SparkContext.getOrCreate()
-    #sc = spark._sc
+    #sc = SparkContext.getOrCreate()
+    sc = spark._sc
 
     main(spark, sc, train, test, val)
