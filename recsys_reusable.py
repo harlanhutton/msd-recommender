@@ -75,19 +75,19 @@ def main(spark, sc, train_input, test_input, val_input):
     val_preds_dict = [{r['user_id_numer']: r['col']} for r in val_preds_dict]
     val_preds_dict = dict((key,d[key]) for d in val_preds_dict for key in d)
 
-    # create predictions and labels RDD and get MAP
-    labels_list = []
+   
+    ### NEW WAY to create predictions and labels 
+    dictcon= list(map(list, val_preds_dict.items()))
+    dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
 
-    print("Dictionaries created")
+    dictcon2= list(map(list, val_true_dict.items()))
+    dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
 
-    for user in val_preds_dict.keys():
-        labels_list.append((val_preds_dict[user][0], [int(i) for i in val_true_dict[user]][0]))
+    rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer')
+                   .rdd
+                   .map(lambda row: (row[1], row[2])))
 
-    labels = spark.sparkContext.parallelize(labels_list)
-
-    print("RDD created")
-
-    metrics = RankingMetrics(labels)
+    metrics = RankingMetrics(rankingsRDD)
 
     print("Ranking Metrics called")
     
