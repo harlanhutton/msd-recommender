@@ -6,10 +6,12 @@ from pyspark.mllib.evaluation import RankingMetrics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
 import pandas as pd
+import numpy as np
 
 # create Spark Session 
 spark = SparkSession.builder.getOrCreate()
-sc = spark._sc
+#sc = SparkContext.getOrCreate()
+#sc = spark._sc
 
 # read in data
 trainSample = spark.read.parquet('train_sample1.parquet')
