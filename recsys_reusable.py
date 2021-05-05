@@ -45,6 +45,8 @@ def main(spark, sc, train_input, test_input, val_input):
               coldStartStrategy="drop", implicitPrefs = True)
     model = als.fit(train_df)
 
+    print("model trained")
+
     # use model to transform validation dataset
     val_transformed = model.transform(val_df)
 
@@ -76,12 +78,21 @@ def main(spark, sc, train_input, test_input, val_input):
     # create predictions and labels RDD and get MAP
     labels_list = []
 
+    print("Dictionaries created")
+
     for user in val_preds_dict.keys():
         labels_list.append((val_preds_dict[user][0], [int(i) for i in val_true_dict[user]][0]))
 
     labels = spark.sparkContext.parallelize(labels_list)
+
+    print("RDD created")
+
     metrics = RankingMetrics(labels)
-    print(metrics.meanAveragePrecision)
+
+    print("Ranking Metrics called")
+    
+    MAP = metrics.meanAveragePrecision
+    print(MAP)
 
 if __name__ == "__main__":
         # Create the spark session object
@@ -92,7 +103,7 @@ if __name__ == "__main__":
     test = sys.argv[2]
     val = sys.argv[3]
     
-    sc = SparkContext.getOrCreate()
-    #sc = spark._sc
+    #sc = SparkContext.getOrCreate()
+    sc = spark._sc
 
     main(spark, sc, train, test, val)
