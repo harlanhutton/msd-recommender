@@ -10,7 +10,7 @@ import numpy as np
 
 # create Spark Session 
 spark = SparkSession.builder.getOrCreate()
-#sc = SparkContext.getOrCreate()
+sc = SparkContext.getOrCreate()
 #sc = spark._sc
 
 # read in data
