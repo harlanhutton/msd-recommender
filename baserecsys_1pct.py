@@ -7,6 +7,9 @@ from pyspark import SparkContext
 from pyspark.sql import SparkSession
 import pandas as pd
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
+
 
 # create Spark Session 
 spark = SparkSession.builder.getOrCreate()
