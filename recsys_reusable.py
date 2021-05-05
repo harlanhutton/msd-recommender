@@ -112,4 +112,6 @@ if __name__ == "__main__":
     
     sc = spark._sc
     
-    main(spark, sc, train, test, val)
+    netID = getpass.getuser()
+    
+    main(spark, sc, train, test, val, netID)
