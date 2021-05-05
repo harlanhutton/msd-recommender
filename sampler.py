@@ -8,8 +8,9 @@ from pyspark.sql import SparkSession
 import numpy as np
 import pandas as pd
 
+
 def main(spark, file_path, pct_sample, netID, new_file_name):
-    
+
     flt_pct_samp = float(pct_sample) / 100
     lines = spark.read.parquet(file_path)
     lines.createOrReplaceTempView('lines')
@@ -31,4 +32,4 @@ if __name__ == "__main__":
     
     netID = getpass.getuser()
 
-    main(spark, file_path, pct_sample, netID)
+    main(spark, file_path, pct_sample, netID,new_file_name)
