@@ -17,7 +17,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     
     # set up checkpoints
     #sparkContext = spark.sparkContext
-    sc.setCheckpointDir(f'hdfs:/user/{user_id}/checkpoints/')
+    #sc.setCheckpointDir(f'hdfs:/user/{user_id}/checkpoints/')
     
     print('set up spark context')
           
@@ -46,7 +46,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df= train_df.drop('track_id')
     
     train_df = train_df.repartition(500)
-    train_df = train_df.checkpoint()
+    #train_df = train_df.checkpoint()
     
     print('dropped columns in training set')
 
@@ -60,7 +60,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_df= val_df.drop('track_id')
     
     val_df = val_df.repartition(500)
-    val_df = val_df.checkpoint()
+    #val_df = val_df.checkpoint()
 
     test_df_1 = indexer_model_1.transform(testSample)
     test_df_2 = indexer_model_2.transform(test_df_1)
@@ -68,7 +68,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     test_df = test_df_2.drop('user_id')
     test_df = test_df.drop('track_id')
 
-    test_df = test_df.checkpoint()
+    #test_df = test_df.checkpoint()
     
     print('dropped columns in validation set')
 
