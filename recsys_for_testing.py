@@ -39,13 +39,15 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     #testSample.createOrReplaceTempView('testSample')
 
 #     # StringIndexer to create new columns and dataframes
-#     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
-#     indexer_model_1 = indexer_obj_1.fit(trainSample)
-#     indexer_df_1 = indexer_model_1.transform(trainSample)
+    indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
+    indexer_model_1 = indexer_obj_1.fit(trainSample)
+    indexer_df_1 = indexer_model_1.transform(trainSample)
+    print('finised indexer 1')
 
-#     indexer_obj_2 = StringIndexer(inputCol="track_id", outputCol="track_id_numer").setHandleInvalid("keep")
-#     indexer_model_2= indexer_obj_2.fit(indexer_df_1)
-#     indexer_df_2 = indexer_model_2.transform(indexer_df_1)
+    indexer_obj_2 = StringIndexer(inputCol="track_id", outputCol="track_id_numer").setHandleInvalid("keep")
+    indexer_model_2= indexer_obj_2.fit(indexer_df_1)
+    indexer_df_2 = indexer_model_2.transform(indexer_df_1)
+    print('finised indexer 2')
 
 #     train_df = indexer_df_2.drop('user_id')
 #     train_df= train_df.drop('track_id')
