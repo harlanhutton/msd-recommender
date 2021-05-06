@@ -78,51 +78,55 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_true.show()
 
 #     # flatten to group by user id and get list of true track ids
-    #val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-    #print('validation set flattened')
+    val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+    print('validation set flattened')
 #     # add to dictionary
-    #val_true_dict = val_true_flatten.collect()
+    val_true_dict = val_true_flatten.collect()
     
     #val_true_dict.show()
-    #val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
-    #val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
+    val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
+    val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
     
-    #print('created dictionary')
+    print('created val true dictionary')
 
-    
 #     # get distinct users from transformed validation set
-#     users = val_transformed.select(als.getUserCol()).distinct()
+    users = val_transformed.select(als.getUserCol()).distinct()
 
 #     # get predictions for validation users
-#     val_preds = model.recommendForUserSubset(users, 10)
-#     val_preds_explode = val_preds.select(val_preds.user_id_numer,func.explode(val_preds.recommendations.track_id_numer))
-#     val_preds_flatten = val_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
+    val_preds = model.recommendForUserSubset(users, 10)
+    val_preds_explode = val_preds.select(val_preds.user_id_numer,func.explode(val_preds.recommendations.track_id_numer))
+    val_preds_flatten = val_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
 
 #     # add validation predictions to dictionary
-#     val_preds_dict = val_preds_flatten.collect()
-#     val_preds_dict = [{r['user_id_numer']: r['col']} for r in val_preds_dict]
-#     val_preds_dict = dict((key,d[key]) for d in val_preds_dict for key in d)
+    val_preds_dict = val_preds_flatten.collect()
+    val_preds_dict = [{r['user_id_numer']: r['col']} for r in val_preds_dict]
+    val_preds_dict = dict((key,d[key]) for d in val_preds_dict for key in d)
+
+    print('created val preds dictionary')
 
    
 #     ### NEW WAY to create predictions and labels 
-#     dictcon= list(map(list, val_preds_dict.items()))
-#     dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
+    dictcon= list(map(list, val_preds_dict.items()))
+    dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
 
-#     dictcon2= list(map(list, val_true_dict.items()))
-#     dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
+    dictcon2= list(map(list, val_true_dict.items()))
+    dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
+
+    print('created val true and val preds df')
     
-#     dftrue = dftrue.repartition(500)
+    #dftrue = dftrue.repartition(500)
 
-#     rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer')
-#                    .rdd
-#                    .map(lambda row: (row[1], row[2])))
 
-#     metrics = RankingMetrics(rankingsRDD)
+    rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
 
-#     print("Ranking Metrics called")
+    print('created RDD')
+
+    metrics = RankingMetrics(rankingsRDD)
+
+    print("Ranking Metrics called")
     
-#     MAP = metrics.meanAveragePrecision
-#     print(MAP)
+    MAP = metrics.meanAveragePrecision
+    print(MAP)
 
 if __name__ == "__main__":
         # Create the spark session object
