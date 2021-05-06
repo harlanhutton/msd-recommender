@@ -22,21 +22,12 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
           
     # read in data
     trainSample = spark.read.parquet(train_input)
-    print('read in train sample')
-    
-    #testSample = spark.read.parquet(test_input)
+    testSample = spark.read.parquet(test_input)
     valSample = spark.read.parquet(val_input)
     
-    print('read in val sample')
-    
     valSample.createOrReplaceTempView('valSample')
-    print('create val sample view')
-    
     trainSample.createOrReplaceTempView('trainSample')
-    
-    print('create train sample view')
-    
-    #testSample.createOrReplaceTempView('testSample')
+    testSample.createOrReplaceTempView('testSample')
 
 #     # StringIndexer to create new columns and dataframes
     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
@@ -52,6 +43,8 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df = indexer_df_2.drop('user_id')
     train_df= train_df.drop('track_id')
     
+    train_df = train_df.repartition(500)
+    
     print('dropped columns in training set')
 
     val_df_1 = indexer_model_1.transform(valSample)
@@ -62,6 +55,8 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
     val_df = val_df_2.drop('user_id')
     val_df= val_df.drop('track_id')
+    
+    val_df = val_df.repartition(500)
     
     print('dropped columns in validation set')
 
@@ -80,19 +75,19 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
 #     # for each user, sort track ids by count
     val_true = val_df.orderBy('count')
-    print('validation set transformed')
+    val_true.show()
 
 #     # flatten to group by user id and get list of true track ids
-    val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-    print('validation set flattened')
+    #val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+    #print('validation set flattened')
 #     # add to dictionary
-    val_true_dict = val_true_flatten.collect()
+    #val_true_dict = val_true_flatten.collect()
     
-    val_true_dict.show()
+    #val_true_dict.show()
     #val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
     #val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
     
-    print('created dictionary')
+    #print('created dictionary')
 
     
 #     # get distinct users from transformed validation set
