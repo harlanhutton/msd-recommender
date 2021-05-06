@@ -74,14 +74,17 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     print("model trained")
 
 #     # use model to transform validation dataset
-#     val_transformed = model.transform(val_df)
+    val_transformed = model.transform(val_df)
+    
+    print('validation set transformed')
 
 #     # for each user, sort track ids by count
-#     val_true = val_df.orderBy('count')
+    val_true = val_df.orderBy('count')
+    print('validation set transformed')
 
 #     # flatten to group by user id and get list of true track ids
-#     val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-
+    val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+    print('validation set flattened')
 #     # add to dictionary
 #     val_true_dict = val_true_flatten.collect()
 #     val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
