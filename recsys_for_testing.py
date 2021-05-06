@@ -5,6 +5,7 @@ import pyspark.sql.functions as func
 from pyspark.mllib.evaluation import RankingMetrics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
+from bayes_opt import BayesianOptimization
 import pandas as pd
 import numpy as np
 import sys
@@ -15,7 +16,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     
     # set up checkpoints
     #sparkContext = spark.sparkContext
-    sc.setCheckpointDir(f'hdfs:/user/{user_id}/final_project/checkpoints')
+    sc.setCheckpointDir(f'hdfs:/user/{user_id}/final-project-recommender-systers/checkpoints')
     
     print('set up spark context')
           
@@ -44,6 +45,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df= train_df.drop('track_id')
     
     train_df = train_df.repartition(500)
+    train_df = train_df.checkpoint()
     
     print('dropped columns in training set')
 
@@ -57,59 +59,97 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_df= val_df.drop('track_id')
     
     val_df = val_df.repartition(500)
+    val_df = val_df.checkpoint()
+
+    test_df_1 = indexer_model_1.transform(testSample)
+    test_df_2 = indexer_model_2.transform(test_df_1)
+
+    test_df = test_df_2.drop('user_id')
+    test_df = test_df.drop('track_id')
+
+    test_df = test_df.checkpoint()
     
     print('dropped columns in validation set')
 
+    #Hyperparam Tuning
+    tuning_params = {"rank":(30,70),"maxIter":(8,16),"regParam":(.01,1),"alpha":(0.0,3.0)}
+
+    def BO_func(rank,maxIter,regParam,alpha):
+        recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
+                         maxIter=int(maxIter),regParam=int(regParam),alpha=int(alpha))
+        model = recommender.fit(train_df)
+        preds = model.transform(val_df)
+        res_valid = RegressionEvaluator(metricName="rmse",labelCol="count",
+                                       predictionCol="prediction")
+        rmse=res_valid.evaluate(preds)
+        return rmse
+
+    optimizer  = BayesianOptimization(f=BO_func, pbounds=tuning_params, verbose=5, random_state=5)
+    optimizer.maximize(init_points=2, n_iter=5)
+    print(optimizer.max)
+
+    params = optimizer.max.get('params')
+    alpha = params.get("alpha")
+    rank = params.get("rank")
+    maxIter = params.get("maxIter")
+    regParam= params.get("regParam")  
+
+    #implement with optimal hyperparameters
+    recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
+                         maxIter=float(maxIter),regParam=float(regParam),alpha=float(alpha))
+    model = recommender.fit(train_df)
+    #change the val_df to test
+    test_transformed = model.transform(test_df)
+
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
-    als = ALS(maxIter=5, regParam=0.01, userCol="user_id_numer", itemCol="track_id_numer", ratingCol= "count",
-              coldStartStrategy="drop", implicitPrefs = True)
-    model = als.fit(train_df)
 
     print("model trained")
 
 #     # use model to transform validation dataset
-    val_transformed = model.transform(val_df)
+    #val_transformed = val_transformed.checkpoint()
     
     print('validation set transformed')
 
 #     # for each user, sort track ids by count
-    val_true = val_df.orderBy('count')
-    val_true.show()
+    test_true = test_df.orderBy('count')
+    test_true.show()
 
 #     # flatten to group by user id and get list of true track ids
-    val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+    test_true_flatten = test_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
     print('validation set flattened')
 #     # add to dictionary
-    val_true_dict = val_true_flatten.collect()
+    test_true_dict = test_true_flatten.collect()
     
     #val_true_dict.show()
-    val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
-    val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
+    test_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in test_true_dict]
+    test_true_dict = dict((key,d[key]) for d in test_true_dict for key in d)
     
     print('created val true dictionary')
 
-#     # get distinct users from transformed validation set
-    users = val_transformed.select(als.getUserCol()).distinct()
+#     # get distinct users from transformed test set
+    users = test_transformed.select(als.getUserCol()).distinct()
 
-#     # get predictions for validation users
-    val_preds = model.recommendForUserSubset(users, 10)
-    val_preds_explode = val_preds.select(val_preds.user_id_numer,func.explode(val_preds.recommendations.track_id_numer))
-    val_preds_flatten = val_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
+#     # get predictions for test users
+    test_preds = model.recommendForUserSubset(users, 10)
+    test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
+    test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
 
-#     # add validation predictions to dictionary
-    val_preds_dict = val_preds_flatten.collect()
-    val_preds_dict = [{r['user_id_numer']: r['col']} for r in val_preds_dict]
-    val_preds_dict = dict((key,d[key]) for d in val_preds_dict for key in d)
+#     # add test predictions to dictionary
+    test_preds_dict = test_preds_flatten.collect()
+    test_preds_dict = [{r['user_id_numer']: r['col']} for r in test_preds_dict]
+    test_preds_dict = dict((key,d[key]) for d in test_preds_dict for key in d)
 
     print('created val preds dictionary')
 
    
 #     ### NEW WAY to create predictions and labels 
-    dictcon= list(map(list, val_preds_dict.items()))
+    dictcon= list(map(list, test_preds_dict.items()))
     dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
 
-    dictcon2= list(map(list, val_true_dict.items()))
+    dictcon2= list(map(list, test_true_dict.items()))
     dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
 
     print('created val true and val preds df')
