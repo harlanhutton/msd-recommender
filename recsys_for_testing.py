@@ -87,8 +87,10 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     print('validation set flattened')
 #     # add to dictionary
     val_true_dict = val_true_flatten.collect()
-    val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
-    val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
+    
+    val_true_dict.show()
+    #val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
+    #val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
     
     print('created dictionary')
 
