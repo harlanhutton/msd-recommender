@@ -42,21 +42,28 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
     indexer_model_1 = indexer_obj_1.fit(trainSample)
     indexer_df_1 = indexer_model_1.transform(trainSample)
-    print('finised indexer 1')
+    print('finised indexer 1 on train')
 
     indexer_obj_2 = StringIndexer(inputCol="track_id", outputCol="track_id_numer").setHandleInvalid("keep")
     indexer_model_2= indexer_obj_2.fit(indexer_df_1)
     indexer_df_2 = indexer_model_2.transform(indexer_df_1)
-    print('finised indexer 2')
+    print('finised indexer 2 on train')
 
-#     train_df = indexer_df_2.drop('user_id')
-#     train_df= train_df.drop('track_id')
+    train_df = indexer_df_2.drop('user_id')
+    train_df= train_df.drop('track_id')
+    
+    print('dropped columns in training set')
 
-#     val_df_1 = indexer_model_1.transform(valSample)
-#     val_df_2= indexer_model_2.transform(val_df_1)
+    val_df_1 = indexer_model_1.transform(valSample)
+    ('transform validation set with indexer 1')
+    
+    val_df_2= indexer_model_2.transform(val_df_1)
+    ('transform validation set with indexer 2')
 
-#     val_df = val_df_2.drop('user_id')
-#     val_df= val_df.drop('track_id')
+    val_df = val_df_2.drop('user_id')
+    val_df= val_df.drop('track_id')
+    
+    print('dropped columns in validation set')
 
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
