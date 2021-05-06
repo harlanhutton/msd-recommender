@@ -14,8 +14,8 @@ import getpass
 def main(spark, sc, train_input, test_input, val_input,user_id):
     
     # set up checkpoints
-    sparkContext = spark.sparkContext
-    sparkContext.setCheckpointDir(f'hdfs:/user/{user_id}/final_project/checkpoints')
+    #sparkContext = spark.sparkContext
+    sc.setCheckpointDir(f'hdfs:/user/{user_id}/final_project/checkpoints')
     
     print('set up spark context')
           
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     test = sys.argv[2]
     val = sys.argv[3]
     
-    sc = spark._sc
+    sc = spark.sparkContext
     
     netID = getpass.getuser()
     
