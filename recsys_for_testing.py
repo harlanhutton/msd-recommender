@@ -7,7 +7,6 @@ from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
 from pyspark.mllib.evaluation import RankingMetrics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
-from bayes_opt import BayesianOptimization
 import pandas as pd
 import numpy as np
 import sys
@@ -76,8 +75,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
         # Import the requisite items
 
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
-                         maxIter=int(maxIter),regParam=int(regParam),alpha=int(alpha))
+                         coldStartStrategy="drop",implicitPrefs=True)
 
     # Add hyperparameters and their respective values to param_grid
     param_grid = ParamGridBuilder() \
