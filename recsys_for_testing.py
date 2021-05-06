@@ -86,11 +86,13 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_true_flatten = val_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
     print('validation set flattened')
 #     # add to dictionary
-#     val_true_dict = val_true_flatten.collect()
-#     val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
-#     val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
+    val_true_dict = val_true_flatten.collect()
+    val_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in val_true_dict]
+    val_true_dict = dict((key,d[key]) for d in val_true_dict for key in d)
+    
+    print('created dictionary')
 
-
+    
 #     # get distinct users from transformed validation set
 #     users = val_transformed.select(als.getUserCol()).distinct()
 
