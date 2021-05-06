@@ -86,7 +86,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
                
     # Define evaluator as RMSE and print length of evaluator
-    evaluator = RegressionEvaluator(metricName="rmse", labelCol="rating", predictionCol="prediction") 
+    evaluator = RegressionEvaluator(metricName="rmse", labelCol="count", predictionCol="prediction") 
     #print ("Num models to be tested: ", len(param_grid))
 
     # Build cross validation using CrossValidator
