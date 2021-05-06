@@ -2,6 +2,8 @@ from pyspark.ml.recommendation import ALS
 from pyspark.sql import Row
 from pyspark.ml.feature import StringIndexer
 import pyspark.sql.functions as func
+from pyspark.ml.evaluation import RegressionEvaluator
+    from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
 from pyspark.mllib.evaluation import RankingMetrics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
@@ -71,37 +73,80 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     
     print('dropped columns in validation set')
 
-    #Hyperparam Tuning
-    tuning_params = {"rank":(30,70),"maxIter":(8,16),"regParam":(.01,1),"alpha":(0.0,3.0)}
+        # Import the requisite items
 
-    def BO_func(rank,maxIter,regParam,alpha):
-        recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
+    als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
                          coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
                          maxIter=int(maxIter),regParam=int(regParam),alpha=int(alpha))
-        model = recommender.fit(train_df)
-        preds = model.transform(val_df)
-        res_valid = RegressionEvaluator(metricName="rmse",labelCol="count",
-                                       predictionCol="prediction")
-        rmse=res_valid.evaluate(preds)
-        return rmse
 
-    optimizer  = BayesianOptimization(f=BO_func, pbounds=tuning_params, verbose=5, random_state=5)
-    optimizer.maximize(init_points=2, n_iter=5)
-    print(optimizer.max)
+    # Add hyperparameters and their respective values to param_grid
+    param_grid = ParamGridBuilder() \
+                .addGrid(als.rank, [10, 50, 100, 150]) \
+                .addGrid(als.regParam, [.01, .05, .1, .15]) \
+                .build()
+                #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
 
-    params = optimizer.max.get('params')
-    alpha = params.get("alpha")
-    rank = params.get("rank")
-    maxIter = params.get("maxIter")
-    regParam= params.get("regParam")  
+               
+    # Define evaluator as RMSE and print length of evaluator
+    evaluator = RegressionEvaluator(metricName="rmse", labelCol="rating", predictionCol="prediction") 
+    #print ("Num models to be tested: ", len(param_grid))
+
+    # Build cross validation using CrossValidator
+    cv = CrossValidator(estimator=als, estimatorParamMaps=param_grid, evaluator=evaluator, numFolds=5)
+
+        #Fit cross validator to the 'train' dataset
+    model = cv.fit(train_df)
+
+    #Extract best model from the cv model above
+    best_model = model.bestModel
+
+        # Print best_model
+    print(type(best_model))
+
+    # Complete the code below to extract the ALS model parameters
+    print("**Best Model**")
+
+    # # Print "Rank"
+    print("  Rank:", best_model._java_obj.parent().getRank())
+
+    # Print "MaxIter"
+    print("  MaxIter:", best_model._java_obj.parent().getMaxIter())
+
+    # Print "RegParam"
+    print("  RegParam:", best_model._java_obj.parent().getRegParam())
+
+    #Hyperparam Tuning
+    #tuning_params = {"rank":(30,70),"maxIter":(8,16),"regParam":(.01,1),"alpha":(0.0,3.0)}
+
+    #def BO_func(rank,maxIter,regParam,alpha):
+        #recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
+                         #coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
+                         #maxIter=int(maxIter),regParam=int(regParam),alpha=int(alpha))
+        #model = recommender.fit(train_df)
+        #preds = model.transform(val_df)
+        #printres_valid = RegressionEvaluator(metricName="rmse",labelCol="count",
+                                       #predictionCol="prediction")
+        #rmse=res_valid.evaluate(preds)
+        #return rmse
+
+    #optimizer  = BayesianOptimization(f=BO_func, pbounds=tuning_params, verbose=5, random_state=5)
+    #optimizer.maximize(init_points=2, n_iter=5)
+    #print(optimizer.max)
+
+    #params = optimizer.max.get('params')
+    #alpha = params.get("alpha")
+    #rank = params.get("rank")
+    #maxIter = params.get("maxIter")
+    #regParam= params.get("regParam")  
 
     #implement with optimal hyperparameters
-    recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
-                         maxIter=float(maxIter),regParam=float(regParam),alpha=float(alpha))
-    model = recommender.fit(train_df)
+    #recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
+                         #coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
+                         #maxIter=float(maxIter),regParam=float(regParam),alpha=float(alpha))
+
+    #model = best_model.fit(train_df)
     #change the val_df to test
-    test_transformed = model.transform(test_df)
+    test_transformed = best_model.transform(test_df)
 
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
