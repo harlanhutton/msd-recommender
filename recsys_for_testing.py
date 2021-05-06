@@ -67,11 +67,11 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
-#     als = ALS(maxIter=5, regParam=0.01, userCol="user_id_numer", itemCol="track_id_numer", ratingCol= "count",
-#               coldStartStrategy="drop", implicitPrefs = True)
-#     model = als.fit(train_df)
+    als = ALS(maxIter=5, regParam=0.01, userCol="user_id_numer", itemCol="track_id_numer", ratingCol= "count",
+              coldStartStrategy="drop", implicitPrefs = True)
+    model = als.fit(train_df)
 
-#     print("model trained")
+    print("model trained")
 
 #     # use model to transform validation dataset
 #     val_transformed = model.transform(val_df)
