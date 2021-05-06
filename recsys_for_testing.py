@@ -17,7 +17,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     
     # set up checkpoints
     #sparkContext = spark.sparkContext
-    sc.setCheckpointDir(f'hdfs:/user/{user_id}/final-project-recommender-systers/checkpoints')
+    sc.setCheckpointDir(f'hdfs:/user/{user_id}/checkpoints')
     
     print('set up spark context')
           
