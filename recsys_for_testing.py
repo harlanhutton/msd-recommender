@@ -75,7 +75,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
         # Import the requisite items
 
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=47.659,regParam=0.523)
+                         coldStartStrategy="drop",implicitPrefs=True,rank=47,regParam=0.523)
 
 
     # Add hyperparameters and their respective values to param_grid
