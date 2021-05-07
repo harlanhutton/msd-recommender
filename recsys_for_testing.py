@@ -75,43 +75,44 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
         # Import the requisite items
 
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True)
+                         coldStartStrategy="drop",implicitPrefs=True,rank=47.659,regParam=0.523)
+
 
     # Add hyperparameters and their respective values to param_grid
-    param_grid = ParamGridBuilder() \
-                .addGrid(als.rank, [10, 50, 100, 150]) \
-                .addGrid(als.regParam, [.01, .05, .1, .15]) \
-                .build()
-                #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
+    # param_grid = ParamGridBuilder() \
+    #             .addGrid(als.rank, [10, 50, 100, 150]) \
+    #             .addGrid(als.regParam, [.01, .05, .1, .15]) \
+    #             .build()
+    #             #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
 
                
     # Define evaluator as RMSE and print length of evaluator
-    evaluator = RegressionEvaluator(metricName="rmse", labelCol="count", predictionCol="prediction") 
-    #print ("Num models to be tested: ", len(param_grid))
+    # evaluator = RegressionEvaluator(metricName="rmse", labelCol="count", predictionCol="prediction") 
+    # #print ("Num models to be tested: ", len(param_grid))
 
-    # Build cross validation using CrossValidator
-    cv = CrossValidator(estimator=als, estimatorParamMaps=param_grid, evaluator=evaluator, numFolds=5)
+    # # Build cross validation using CrossValidator
+    # cv = CrossValidator(estimator=als, estimatorParamMaps=param_grid, evaluator=evaluator, numFolds=5)
 
-        #Fit cross validator to the 'train' dataset
-    model = cv.fit(train_df)
+    #     #Fit cross validator to the 'train' dataset
+    # model = cv.fit(train_df)
 
     #Extract best model from the cv model above
-    best_model = model.bestModel
+    # best_model = model.bestModel
 
-        # Print best_model
-    print(type(best_model))
+    #     # Print best_model
+    # print(type(best_model))
 
-    # Complete the code below to extract the ALS model parameters
-    print("**Best Model**")
+    # # Complete the code below to extract the ALS model parameters
+    # print("**Best Model**")
 
-    # # Print "Rank"
-    print("  Rank:", best_model._java_obj.parent().getRank())
+    # # # Print "Rank"
+    # print("  Rank:", best_model._java_obj.parent().getRank())
 
-    # Print "MaxIter"
-    print("  MaxIter:", best_model._java_obj.parent().getMaxIter())
+    # # Print "MaxIter"
+    # print("  MaxIter:", best_model._java_obj.parent().getMaxIter())
 
-    # Print "RegParam"
-    print("  RegParam:", best_model._java_obj.parent().getRegParam())
+    # # Print "RegParam"
+    # print("  RegParam:", best_model._java_obj.parent().getRegParam())
 
     #Hyperparam Tuning
     #tuning_params = {"rank":(30,70),"maxIter":(8,16),"regParam":(.01,1),"alpha":(0.0,3.0)}
@@ -144,6 +145,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
     #model = best_model.fit(train_df)
     #change the val_df to test
+    best_model = als.fit(train_df)
     test_transformed = best_model.transform(test_df)
 
 #     # Build the recommendation model using ALS on the training data
