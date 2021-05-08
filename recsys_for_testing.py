@@ -45,7 +45,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df = indexer_df_2.drop('user_id')
     train_df= train_df.drop('track_id')
     
-    train_df = train_df.repartition(500)
+    #train_df = train_df.repartition(500)
     #train_df = train_df.checkpoint()
     
     print('dropped columns in training set')
@@ -75,7 +75,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
         # Import the requisite items
 
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=int(47),regParam=float(0.523))
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.523))
 
 
     # Add hyperparameters and their respective values to param_grid
@@ -199,7 +199,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
     print('created val true and val preds df')
     
-    #dftrue = dftrue.repartition(500)
+    dftrue = dftrue.repartition(500)
 
 
     rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
