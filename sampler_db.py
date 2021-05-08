@@ -21,7 +21,7 @@ def main(spark):
         
         cursor = conn.cursor()
     
-        cursor.execute("SELECT * FROM df.sqlite_master WHERE type='table'")
+        cursor.execute("SELECT * FROM sqlite_master WHERE type='table'")
         
         #cursor.execute('SELECT * FROM tracks')
         
