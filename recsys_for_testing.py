@@ -162,7 +162,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
 #     # for each user, sort track ids by count
     test_true = test_df.orderBy('count')
-    test_true.show()
+    #test_true.show()
 
 #     # flatten to group by user id and get list of true track ids
     test_true_flatten = test_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
