@@ -15,14 +15,14 @@ from pyspark.sql import SQLContext
 
 def main(spark):
     
-    df = 'track_metadata'
+    df = 'track_metadata.db'
     
     with sqlite3.connect(df) as conn:
         
         cursor = conn.cursor()
     
         
-        cursor.execute('SELECT * FROM df')
+        cursor.execute('SELECT * FROM songs')
         
         print(cursor.fetchone()[0])
 
