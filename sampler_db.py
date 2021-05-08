@@ -11,23 +11,32 @@ import pandas as pd
 from pyspark.sql import SQLContext
 
 
-def main(spark, netID):
+def main(spark):
     
-    sampler = spark.sql("SELECT * FROM `/scratch/work/courses/DSGA1004-2021/MSD/AdditionalFiles/track_metadata.db `")
+    df = spark.read.format('jdbc').options(driver='org.sqlite.JDBC', dbtable='my_table', url='jdbc:/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db').load()
     
-    sampler.createOrReplaceTempView("sampler")
+#      df = sqlContext.read.format('jdbc').\
+#      options(url='jdbc:sqlite:/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db',\
+#      dbtable='employee',driver='org.sqlite.JDBC').load()
     
-    df = sampler.sample(fraction=.01, seed = 1)
+#     sampler = spark.sql("SELECT * FROM `/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `")
     
-    df.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
+#     sampler.createOrReplaceTempView("sampler")
+    
+    df_sample = df.sample(fraction=.01, seed = 1)
+    
+    df_sample.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
 
     
 # Only enter this block if we're in main
 if __name__ == "__main__":
 
     # Create the spark session object
-    spark = SparkSession.builder.appName('sampler_db').getOrCreate()
 
-    netID = getpass.getuser()
 
-    main(spark, netID)
+    spark = SparkSession.builder\
+               .config('spark.jars.packages', 'org.xerial:sqlite-jdbc:3.34.0')\
+               .getOrCreate()
+
+
+    main(spark)
