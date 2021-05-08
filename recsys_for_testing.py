@@ -45,7 +45,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df = indexer_df_2.drop('user_id')
     train_df= train_df.drop('track_id')
     
-    #train_df = train_df.repartition(500)
+    train_df = train_df.repartition(2000)
     #train_df = train_df.checkpoint()
     
     print('dropped columns in training set')
@@ -59,7 +59,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_df = val_df_2.drop('user_id')
     val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(500)
+    val_df = val_df.repartition(2000)
     #val_df = val_df.checkpoint()
 
     test_df_1 = indexer_model_1.transform(testSample)
@@ -178,7 +178,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     users = test_transformed.select(als.getUserCol()).distinct()
 
 #     # get predictions for test users
-    test_preds = model.recommendForUserSubset(users, 500)
+    test_preds = model.recommendForUserSubset(users,500)
     test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
 
@@ -199,7 +199,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
     print('created val true and val preds df')
     
-    dftrue = dftrue.repartition(500)
+    dftrue = dftrue.repartition(2000)
 
 
     rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
