@@ -147,13 +147,15 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
     #model = best_model.fit(train_df)
     #change the val_df to test
+    print("model trained")
     best_model = als.fit(train_df)
+    print("fitted")
     test_transformed = best_model.transform(test_df)
 
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
 
-    print("model trained")
+    
 
 #     # use model to transform validation dataset
     #val_transformed = val_transformed.checkpoint()
@@ -168,6 +170,8 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     test_true_flatten = test_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
     print('validation set flattened')
 #     # add to dictionary
+
+    test_true_flatten.cache()
     test_true_dict = test_true_flatten.collect()
     
     #val_true_dict.show()
@@ -185,6 +189,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
 
 #     # add test predictions to dictionary
+    test_preds_flatten.cache()
     test_preds_dict = test_preds_flatten.collect()
     test_preds_dict = [{r['user_id_numer']: r['col']} for r in test_preds_dict]
     test_preds_dict = dict((key,d[key]) for d in test_preds_dict for key in d)
