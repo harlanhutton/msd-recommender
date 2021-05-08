@@ -17,7 +17,7 @@ def main(spark):
     
     df = 'track_metadata'
     
-    with sqlite3.connect(db_file) as conn:
+    with sqlite3.connect(df) as conn:
         
         cursor = conn.cursor()
     
