@@ -15,6 +15,8 @@ def main(spark, netID):
     
     sampler = spark.sql("SELECT * FROM db.`/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `")
     
+    sampler.createOrReplaceTempView("sampler")
+    
     df = sampler.sample(fraction=.01, seed = 1)
     
     df.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
