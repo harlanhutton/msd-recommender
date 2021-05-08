@@ -21,10 +21,13 @@ def main(spark):
         
         cursor = conn.cursor()
     
+        cursor.execute("SELECT * FROM df.sqlite_master WHERE type='table'")
         
-        cursor.execute('SELECT * FROM tracks')
+        #cursor.execute('SELECT * FROM tracks')
         
-        print(cursor.fetchone()[0])
+        print(cursor.all())
+        
+        #print(cursor.fetchone()[0])
 
 #         df_sample = df.sample(fraction=.01, seed = 1)
 
