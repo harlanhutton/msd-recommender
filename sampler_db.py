@@ -13,9 +13,11 @@ from pyspark.sql import SQLContext
 
 def main(spark, netID):
     
-    sampler = spark.sql("SELECT * FROM db.`/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db ` ORDER BY RANDOM() LIMIT 2000")
+    sampler = spark.sql("SELECT * FROM db.`/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `)
     
-    sampler.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
+    df = sampler.sample(fraction=.01, seed = 1)
+    
+    df.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
 
     
 # Only enter this block if we're in main
