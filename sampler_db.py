@@ -22,7 +22,7 @@ def main(spark):
         cursor = conn.cursor()
     
         
-        cursor.execute('SELECT * FROM songs')
+        cursor.execute('SELECT * FROM tracks')
         
         print(cursor.fetchone()[0])
 
