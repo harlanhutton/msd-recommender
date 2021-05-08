@@ -13,7 +13,7 @@ from pyspark.sql import SQLContext
 
 def main(spark, netID):
     
-    sampler = spark.sql("SELECT * FROM db.`/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `)
+    sampler = spark.sql("SELECT * FROM db.`/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `")
     
     df = sampler.sample(fraction=.01, seed = 1)
     
