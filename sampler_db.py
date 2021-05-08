@@ -15,7 +15,7 @@ def main(spark, netID):
     
     sampler = spark.sql("SELECT * FROM db.`/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db ` ORDER BY RANDOM() LIMIT 2000")
     
-    sampler.write.mode('overwrite').parquet(f'hdfs:/user/{netID}/meta_db_sample.parquet')
+    sampler.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
 
     
 # Only enter this block if we're in main
