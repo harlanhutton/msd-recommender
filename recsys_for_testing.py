@@ -178,7 +178,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     users = test_transformed.select(als.getUserCol()).distinct()
 
 #     # get predictions for test users
-    test_preds = model.recommendForUserSubset(users, 10)
+    test_preds = model.recommendForUserSubset(users, 500)
     test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
 
