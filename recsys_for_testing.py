@@ -45,7 +45,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df = indexer_df_2.drop('user_id')
     train_df= train_df.drop('track_id')
     
-    train_df = train_df.repartition(2000)
+    train_df = train_df.repartition(50000)
     #train_df = train_df.checkpoint()
     
     print('dropped columns in training set')
@@ -59,7 +59,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_df = val_df_2.drop('user_id')
     val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(2000)
+    val_df = val_df.repartition(50000)
     #val_df = val_df.checkpoint()
 
     test_df_1 = indexer_model_1.transform(testSample)
@@ -67,6 +67,8 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
     test_df = test_df_2.drop('user_id')
     test_df = test_df.drop('track_id')
+
+    test_df = test_df.repartition(50000)
 
     #test_df = test_df.checkpoint()
     
@@ -194,12 +196,14 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     dictcon= list(map(list, test_preds_dict.items()))
     dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
 
+    dfpreds = dfpreds.repartition(50000)
+
     dictcon2= list(map(list, test_true_dict.items()))
     dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
 
     print('created val true and val preds df')
     
-    dftrue = dftrue.repartition(2000)
+    dftrue = dftrue.repartition(50000)
 
 
     rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
