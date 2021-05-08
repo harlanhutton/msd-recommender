@@ -8,24 +8,27 @@ from pyspark.sql import SparkSession
 import numpy as np
 import pandas as pd
 
+import sqlite3
+
 from pyspark.sql import SQLContext
 
 
 def main(spark):
     
-    df = spark.read.format('jdbc').options(driver='org.sqlite.JDBC', dbtable='my_table', url='jdbc:/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db').load()
+    df = 'track_metadata'
     
-#      df = sqlContext.read.format('jdbc').\
-#      options(url='jdbc:sqlite:/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db',\
-#      dbtable='employee',driver='org.sqlite.JDBC').load()
+    with sqlite3.connect(db_file) as conn:
+        
+        cursor = conn.cursor()
     
-#     sampler = spark.sql("SELECT * FROM `/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `")
-    
-#     sampler.createOrReplaceTempView("sampler")
-    
-    df_sample = df.sample(fraction=.01, seed = 1)
-    
-    df_sample.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
+        
+        cursor.execute('SELECT * FROM df')
+        
+        print(cursor.fetchone()[0])
+
+#         df_sample = df.sample(fraction=.01, seed = 1)
+
+#         df_sample.write.mode('overwrite').parquet('hdfs:/user/jke261/meta_db_sample.parquet')
 
     
 # Only enter this block if we're in main
@@ -33,10 +36,6 @@ if __name__ == "__main__":
 
     # Create the spark session object
 
-
-    spark = SparkSession.builder\
-               .config('spark.jars.packages', 'org.xerial:sqlite-jdbc:3.34.0')\
-               .getOrCreate()
-
-
+    spark = SparkSession.builder.appName('sampler_db').getOrCreate()
+    
     main(spark)
