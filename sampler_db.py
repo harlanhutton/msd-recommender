@@ -11,9 +11,7 @@ import pandas as pd
 
 def main(spark, netID):
     
-    filer = '/scratch/work/public/MillionSongDataset/'
-    
-    filer.createOrReplaceTempView('filer')
+    filer.createOrReplaceTempView('/scratch/work/public/MillionSongDataset/')
     
     sampler = spark.sql('SELECT * FROM filer ORDER BY RANDOM() LIMIT 2000')
     
