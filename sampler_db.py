@@ -13,7 +13,7 @@ from pyspark.sql import SQLContext
 
 def main(spark, netID):
     
-    sampler = spark.sql("SELECT * FROM `/scratch/work/public/MillionSongDataset/AdditionalFiles/track_metadata.db `")
+    sampler = spark.sql("SELECT * FROM `/scratch/work/courses/DSGA1004-2021/MSD/AdditionalFiles/track_metadata.db `")
     
     sampler.createOrReplaceTempView("sampler")
     
