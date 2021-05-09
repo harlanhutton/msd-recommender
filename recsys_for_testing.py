@@ -150,7 +150,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     print("model trained")
     best_model = als.fit(train_df)
     print("fitted")
-    test_transformed = best_model.(test_df)
+    #test_transformed = best_model.transformed(test_df)
 
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
@@ -181,7 +181,9 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     print('created val true dictionary')
 
 #     # get distinct users from transformed test set
-    users = test_transformed.select(als.getUserCol()).distinct()
+    #users = test_transformed.select(als.getUserCol()).distinct()
+
+    users = test_df.select(als.getUserCol()).distinct()
 
 #     # get predictions for test users
     test_preds = model.recommendForUserSubset(users,500)
