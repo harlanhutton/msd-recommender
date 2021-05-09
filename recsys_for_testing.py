@@ -46,7 +46,6 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     train_df= train_df.drop('track_id')
     
     train_df = train_df.repartition(2000)
-    #train_df = train_df.checkpoint()
     
     print('dropped columns in training set')
 
@@ -60,7 +59,6 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     val_df= val_df.drop('track_id')
     
     val_df = val_df.repartition(5000)
-    #val_df = val_df.checkpoint()
 
     test_df_1 = indexer_model_1.transform(testSample)
     test_df_2 = indexer_model_2.transform(test_df_1)
@@ -116,114 +114,107 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     # # Print "RegParam"
     # print("  RegParam:", best_model._java_obj.parent().getRegParam())
 
-    #Hyperparam Tuning
-    #tuning_params = {"rank":(30,70),"maxIter":(8,16),"regParam":(.01,1),"alpha":(0.0,3.0)}
 
-    #def BO_func(rank,maxIter,regParam,alpha):
-        #recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         #coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
-                         #maxIter=int(maxIter),regParam=int(regParam),alpha=int(alpha))
-        #model = recommender.fit(train_df)
-        #preds = model.transform(val_df)
-        #printres_valid = RegressionEvaluator(metricName="rmse",labelCol="count",
-                                       #predictionCol="prediction")
-        #rmse=res_valid.evaluate(preds)
-        #return rmse
-
-    #optimizer  = BayesianOptimization(f=BO_func, pbounds=tuning_params, verbose=5, random_state=5)
-    #optimizer.maximize(init_points=2, n_iter=5)
-    #print(optimizer.max)
-
-    #params = optimizer.max.get('params')
-    #alpha = params.get("alpha")
-    #rank = params.get("rank")
-    #maxIter = params.get("maxIter")
-    #regParam= params.get("regParam")  
-
-    #implement with optimal hyperparameters
-    #recommender = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         #coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),
-                         #maxIter=float(maxIter),regParam=float(regParam),alpha=float(alpha))
-
-    #model = best_model.fit(train_df)
-    #change the val_df to test
     print("model trained")
     best_model = als.fit(train_df)
     print("fitted")
-    #test_transformed = best_model.transform(test_df)
-
-#     # Build the recommendation model using ALS on the training data
-#     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
-
     
-
-#     # use model to transform validation dataset
-    #val_transformed = val_transformed.checkpoint()
-    
-    print('validation set transformed')
-
-#     # for each user, sort track ids by count
-    test_true = test_df.orderBy('count')
-    #test_true.show()
-
-#     # flatten to group by user id and get list of true track ids
-    test_true_flatten = test_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-    print('validation set flattened')
-#     # add to dictionary
-    
-
-    test_true_flatten.cache()
-    test_true_flatten = test_true_flatten.repartition(5000)
-    test_true_dict = test_true_flatten.collect()
-    
-    #val_true_dict.show()
-    test_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in test_true_dict]
-    test_true_dict = dict((key,d[key]) for d in test_true_dict for key in d)
-    
-    print('created val true dictionary')
-
-#     # get distinct users from transformed test set
     users = test_df.select(als.getUserCol()).distinct()
 
-#     # get predictions for test users
-    test_preds = best_model.recommendForUserSubset(users,500)
+    test_preds = best_model.recommendForUserSubset(users,5)
     test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
-
-#     # add test predictions to dictionary
-    test_preds_flatten.cache()
-    test_preds_flatten = test_preds_flatten.repartition(5000)
-    test_preds_dict = test_preds_flatten.collect()
-    test_preds_dict = [{r['user_id_numer']: r['col']} for r in test_preds_dict]
-    test_preds_dict = dict((key,d[key]) for d in test_preds_dict for key in d)
-
-    print('created val preds dictionary')
-
-   
-#     ### NEW WAY to create predictions and labels 
-    dictcon= list(map(list, test_preds_dict.items()))
-    dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
-
-    dfpreds = dfpreds.repartition(5000)
-
-    dictcon2= list(map(list, test_true_dict.items()))
-    dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
-
-    print('created val true and val preds df')
-    
-    dftrue = dftrue.repartition(5000)
-
-
-    rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
-
-    print('created RDD')
-
+    test_true_flatten = test_df.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+    test_true_flatten = test_true_flatten.repartition(5000)
+    rankingsRDD = (test_preds_flatten.join(test_true_flatten, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
     metrics = RankingMetrics(rankingsRDD)
 
     print("Ranking Metrics called")
-    
+
     MAP = metrics.meanAveragePrecision
     print(MAP)
+
+
+
+#    #test_transformed = best_model.transform(test_df)
+#
+##     # Build the recommendation model using ALS on the training data
+##     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
+#
+#
+#
+##     # use model to transform validation dataset
+#    #val_transformed = val_transformed.checkpoint()
+#
+#    print('validation set transformed')
+#
+##     # for each user, sort track ids by count
+#    test_true = test_df.orderBy('count')
+#    #test_true.show()
+#
+##     # flatten to group by user id and get list of true track ids
+#    test_true_flatten = test_true.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+#    print('validation set flattened')
+##     # add to dictionary
+#
+#
+#    test_true_flatten.cache()
+#    test_true_flatten = test_true_flatten.repartition(5000)
+#    test_true_dict = test_true_flatten.collect()
+#
+#    #val_true_dict.show()
+#    test_true_dict = [{r['user_id_numer']: r['track_id_numer']} for r in test_true_dict]
+#    test_true_dict = dict((key,d[key]) for d in test_true_dict for key in d)
+#
+#    print('created val true dictionary')
+#
+##     # get distinct users from transformed test set
+#    users = test_df.select(als.getUserCol()).distinct()
+#
+##     # get predictions for test users
+#    test_preds = best_model.recommendForUserSubset(users,500)
+#    test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
+#    test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
+#
+##     # add test predictions to dictionary
+#    test_preds_flatten.cache()
+#    test_preds_flatten = test_preds_flatten.repartition(5000)
+#    test_preds_dict = test_preds_flatten.collect()
+#    test_preds_dict = [{r['user_id_numer']: r['col']} for r in test_preds_dict]
+#    test_preds_dict = dict((key,d[key]) for d in test_preds_dict for key in d)
+#
+#    print('created val preds dictionary')
+#
+#
+##     ### NEW WAY to create predictions and labels
+#    dictcon= list(map(list, test_preds_dict.items()))
+#    dfpreds = spark.createDataFrame(dictcon, ["user_id_numer", "tracks"])
+#
+#    dfpreds = dfpreds.repartition(5000)
+#
+#    dictcon2= list(map(list, test_true_dict.items()))
+#    dftrue = spark.createDataFrame(dictcon2, ["user_id_numer", "tracks"])
+#
+#    print('created val true and val preds df')
+#
+#    dftrue = dftrue.repartition(5000)
+#
+#
+#    rankingsRDD = (dfpreds.join(dftrue, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
+#
+#    print('created RDD')
+#
+#    metrics = RankingMetrics(rankingsRDD)
+#
+#    print("Ranking Metrics called")
+#
+#    MAP = metrics.meanAveragePrecision
+#    print(MAP)
+
+
+
+#NEW WAY
+
 
 if __name__ == "__main__":
         # Create the spark session object
