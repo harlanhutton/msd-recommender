@@ -125,7 +125,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
     test_true_flatten = test_df.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-    test_true_flatten = test_true_flatten.repartition(5000)
+    #test_true_flatten = test_true_flatten.repartition(5000)
     rankingsRDD = (test_preds_flatten.join(test_true_flatten, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
     metrics = RankingMetrics(rankingsRDD)
 
@@ -218,7 +218,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
 if __name__ == "__main__":
         # Create the spark session object
-    spark = SparkSession.builder.appName('sampler').config("spark.network.timeout",1000).getOrCreate()
+    spark = SparkSession.builder.appName('sampler').getOrCreate()
 
     # Get file_path for dataset to analyze
     train = sys.argv[1]
