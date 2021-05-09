@@ -53,9 +53,9 @@ def main(spark):
 
     test_df = test_df.repartition(5000)
 
-    test_df.write.mode('overwrite').parquet(f'hdfs:/user/ahh303/pub/test_df.parquet')
-    train_df.write.mode('overwrite').parquet(f'hdfs:/user/ahh303/pub/train_df.parquet')
-    val_df.write.mode('overwrite').parquet(f'hdfs:/user/ahh303/pub/val_df.parquet')
+    test_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/test_df.parquet')
+    train_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/train_df.parquet')
+    val_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/val_df.parquet')
 
 
 
