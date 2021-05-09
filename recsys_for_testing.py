@@ -150,7 +150,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
     print("model trained")
     best_model = als.fit(train_df)
     print("fitted")
-    test_transformed = best_model.transform(test_df)
+    test_transformed = best_model.(test_df)
 
 #     # Build the recommendation model using ALS on the training data
 #     # Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
@@ -160,7 +160,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 #     # use model to transform validation dataset
     #val_transformed = val_transformed.checkpoint()
     
-    print('validation set transformed')
+    print('model applied to test_df')
 
 #     # for each user, sort track ids by count
     test_true = test_df.orderBy('count')
