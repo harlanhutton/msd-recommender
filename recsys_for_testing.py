@@ -218,7 +218,7 @@ def main(spark, sc, train_input, test_input, val_input,user_id):
 
 if __name__ == "__main__":
         # Create the spark session object
-    spark = SparkSession.builder.appName('sampler').getOrCreate()
+    spark = SparkSession.builder.appName('sampler').config("spark.network.timeout",1000).getOrCreate()
 
     # Get file_path for dataset to analyze
     train = sys.argv[1]
