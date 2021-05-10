@@ -12,11 +12,17 @@ import getpass
 def main(spark, sc):
 
     print('set up spark context')
+
+    sc.setCheckpointDir('hdfs:/user/ahh303/checkpoints')
     
     # Read in parquet files
     train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
     test_df = spark.read.parquet('hdfs:/user/ahh303/pub/test_df.parquet')
     val_df = spark.read.parquet('hdfs:/user/ahh303/pub/val_df.parquet')
+
+    train_df.checkpoint()
+    test_df.checkpoint()
+    val_df.checkpoint()
 
     print('dfs created')
 
@@ -46,6 +52,7 @@ def main(spark, sc):
     
     # Create dataframe for true test user listens
     test_true_flatten = test_df.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
+    test_true_flatten.checkpoint()
 
     print('test true df created')
  
