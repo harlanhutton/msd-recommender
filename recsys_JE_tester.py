@@ -44,11 +44,11 @@ def main(spark, sc ,user_id):
     
     users = test_df.select(als.getUserCol()).distinct()
 
-    test_preds = best_model.recommendForUserSubset(users,500)
+    test_preds = best_model.recommendForUserSubset(users,5)
     test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
     test_true_flatten = test_df.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-    #test_true_flatten = test_true_flatten.repartition(5000)
+
     rankingsRDD = (test_preds_flatten.join(test_true_flatten, 'user_id_numer').rdd.map(lambda row: (row[1], row[2])))
     metrics = RankingMetrics(rankingsRDD)
 
