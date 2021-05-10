@@ -30,7 +30,7 @@ def main(spark):
     val_df = val_df_2.drop('user_id')
     val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(5000)
+    val_df = val_df.repartition(2000)
   
     val_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/val_df.parquet')
 
