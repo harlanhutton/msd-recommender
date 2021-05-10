@@ -25,6 +25,8 @@ def main(spark, sc):
 
     print('dfs created')
     # Add hyperparameters and their respective values to param_grid
+    als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.1))
     param_grid = ParamGridBuilder().addGrid(als.rank, [5,10,15,20]).addGrid(als.regParam,[.01,.1,1]).build()
     
     
