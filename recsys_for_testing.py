@@ -13,19 +13,24 @@ import sys
 import getpass
 
 
-def main(spark, sc, train_input, test_input, val_input,user_id):
+def main(spark, sc ,user_id):
     
     # set up checkpoints
     #sparkContext = spark.sparkContext
     #sc.setCheckpointDir(f'hdfs:/user/{user_id}/checkpoints/')
     
     print('set up spark context')
-          
+    
+    
+    trainSample = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
+    testSample = spark.read.parquet('hdfs:/user/ahh303/pub/test_df.parque')
+    valSample = spark.read.parquet('hdfs:/user/ahh303/pub/val_df.parquet')
+    
           
     # read in data
-    trainSample = spark.read.parquet(train_input)
-    testSample = spark.read.parquet(test_input)
-    valSample = spark.read.parquet(val_input)
+#     trainSample = spark.read.parquet(train_input)
+#     testSample = spark.read.parquet(test_input)
+#     valSample = spark.read.parquet(val_input)
     
     valSample.createOrReplaceTempView('valSample')
     trainSample.createOrReplaceTempView('trainSample')
@@ -221,12 +226,12 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName('sampler').getOrCreate()
 
     # Get file_path for dataset to analyze
-    train = sys.argv[1]
-    test = sys.argv[2]
-    val = sys.argv[3]
+#     train = sys.argv[1]
+#     test = sys.argv[2]
+#     val = sys.argv[3]
     
     sc = spark.sparkContext
     
     netID = getpass.getuser()
     
-    main(spark, sc, train, test, val, netID)
+    main(spark, sc,netID)
