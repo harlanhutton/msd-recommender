@@ -58,7 +58,7 @@ if __name__ == "__main__":
     
     sc = spark.sparkContext
     
-    netID = getpass.getuser()
+    #netID = getpass.getuser()
     
-    main(spark, sc,netID)
+    main(spark, sc)
 
