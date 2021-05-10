@@ -9,12 +9,12 @@ def main(spark):
            
     # read in data
     trainSample = spark.read.parquet('train_samplehyp10.parquet')
-    testSample = spark.read.parquet('test_samplehyp10.parquet')
-    valSample = spark.read.parquet('val_samplehyp10.parquet')
+    #testSample = spark.read.parquet('test_samplehyp10.parquet')
+    #valSample = spark.read.parquet('val_samplehyp10.parquet')
     
-    valSample.createOrReplaceTempView('valSample')
+    #valSample.createOrReplaceTempView('valSample')
     trainSample.createOrReplaceTempView('trainSample')
-    testSample.createOrReplaceTempView('testSample')
+    #testSample.createOrReplaceTempView('testSample')
 
 #     # StringIndexer to create new columns and dataframes
     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
@@ -33,29 +33,29 @@ def main(spark):
     
     print('dropped columns in training set')
 
-    val_df_1 = indexer_model_1.transform(valSample)
+    #val_df_1 = indexer_model_1.transform(valSample)
     print('transform validation set with indexer 1')
     
-    val_df_2= indexer_model_2.transform(val_df_1)
+    #val_df_2= indexer_model_2.transform(val_df_1)
     print('transform validation set with indexer 2')
 
-    val_df = val_df_2.drop('user_id')
-    val_df= val_df.drop('track_id')
+    #val_df = val_df_2.drop('user_id')
+    #val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(5000)
+    #val_df = val_df.repartition(5000)
     #val_df = val_df.checkpoint()
 
-    test_df_1 = indexer_model_1.transform(testSample)
-    test_df_2 = indexer_model_2.transform(test_df_1)
+    #test_df_1 = indexer_model_1.transform(testSample)
+    #test_df_2 = indexer_model_2.transform(test_df_1)
 
-    test_df = test_df_2.drop('user_id')
-    test_df = test_df.drop('track_id')
+    #test_df = test_df_2.drop('user_id')
+    #test_df = test_df.drop('track_id')
 
-    test_df = test_df.repartition(5000)
+    #test_df = test_df.repartition(5000)
 
-    test_df.write.mode('overwrite').parquet('test_df10hyp.parquet')
+    #test_df.write.mode('overwrite').parquet('test_df10hyp.parquet')
     train_df.write.mode('overwrite').parquet('train_df10hyp.parquet')
-    val_df.write.mode('overwrite').parquet('val_df10hyp.parquet')
+    #val_df.write.mode('overwrite').parquet('val_df10hyp.parquet')
 
 
 
