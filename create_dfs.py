@@ -29,7 +29,7 @@ def main(spark):
 
     train_df = indexer_df_2.drop('user_id')
     train_df = train_df.drop('track_id')
-    train_df = train_df.repartition(5000)
+    train_df = train_df.repartition(2000)
     
     print('dropped columns in training set')
 
@@ -42,7 +42,7 @@ def main(spark):
     val_df = val_df_2.drop('user_id')
     val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(5000)
+    val_df = val_df.repartition(2000)
     #val_df = val_df.checkpoint()
 
     test_df_1 = indexer_model_1.transform(testSample)
@@ -51,11 +51,11 @@ def main(spark):
     test_df = test_df_2.drop('user_id')
     test_df = test_df.drop('track_id')
 
-    test_df = test_df.repartition(5000)
+    test_df = test_df.repartition(2000)
 
-    test_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/test_df.parquet')
-    train_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/train_df.parquet')
-    val_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/val_df.parquet')
+    test_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/test_df_full.parquet')
+    train_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/train_df_full.parquet')
+    val_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/val_df_full.parquet')
 
 
 
