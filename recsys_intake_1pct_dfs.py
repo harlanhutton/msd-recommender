@@ -83,12 +83,12 @@ def main(spark, sc ,user_id):
                          coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.1))
 
 
-    # Add hyperparameters and their respective values to param_grid
-    # param_grid = ParamGridBuilder() \
-    #             .addGrid(als.rank, [10, 50, 100, 150]) \
-    #             .addGrid(als.regParam, [.01, .05, .1, .15]) \
-    #             .build()
-    #             #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
+    Add hyperparameters and their respective values to param_grid
+    param_grid = ParamGridBuilder() \
+                .addGrid(als.rank, [10, 50, 100, 150]) \
+                .addGrid(als.regParam, [.01, .05, .1, .15]) \
+                .build()
+                #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
 
                
     # Define evaluator as RMSE and print length of evaluator
@@ -126,7 +126,7 @@ def main(spark, sc ,user_id):
     
     users = test_df.select(als.getUserCol()).distinct()
 
-    test_preds = best_model.recommendForUserSubset(users,5)
+    test_preds = best_model.recommendForUserSubset(users,500)
     test_preds_explode = test_preds.select(test_preds.user_id_numer,func.explode(test_preds.recommendations.track_id_numer))
     test_preds_flatten = test_preds_explode.groupby('user_id_numer').agg(func.collect_list('col').alias("col"))
     test_true_flatten = test_df.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
