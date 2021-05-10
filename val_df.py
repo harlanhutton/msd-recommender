@@ -35,7 +35,7 @@ def main(spark):
     
     val_df = val_df.repartition(2000)
   
-    val_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/val_df.parquet')
+    val_df.write.mode('overwrite').parquet('hdfs:/user/ahh303/pub/val_df2.parquet')
 
 
 if __name__ == "__main__":
