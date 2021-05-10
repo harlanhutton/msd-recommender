@@ -26,11 +26,7 @@ def main(spark, sc ,user_id):
     test_df = spark.read.parquet('test_df.parquet')
     val_df = spark.read.parquet('val_df.parquet')
     
-          
-    # read in data
-#     trainSample = spark.read.parquet(train_input)
-#     testSample = spark.read.parquet(test_input)
-#     valSample = spark.read.parquet(val_input)
+      
    
 
         # Import the requisite items
