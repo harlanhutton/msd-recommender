@@ -78,7 +78,12 @@ def main(spark, sc):
 if __name__ == "__main__":
     
     # Create the spark session object
-    spark = SparkSession.builder.appName('sampler').getOrCreate()
+    spark = SparkSession.builder.config('spark.executor.instances', '8')\
+    .config('spark.executor.memory', '16g')\
+    .config('spark.driver.memory', '8g')\
+    .config('spark.executor.cores', '3')\
+    .config('spark.default.parallelism', '48')
+    .appName('sampler').getOrCreate()
     
     # Create spark context
     sc = spark.sparkContext
