@@ -22,9 +22,9 @@ def main(spark, sc ,user_id):
     print('set up spark context')
     
     
-    trainSample = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
-    testSample = spark.read.parquet('hdfs:/user/ahh303/pub/test_df.parquet')
-    valSample = spark.read.parquet('hdfs:/user/ahh303/pub/val_df.parquet')
+    train_df = spark.read.parquet('train_df1.parquet')
+    test_df = spark.read.parquet('test_df1.parquet')
+    val_df = spark.read.parquet('test_df1.parquet')
     
           
     # read in data
@@ -32,50 +32,50 @@ def main(spark, sc ,user_id):
 #     testSample = spark.read.parquet(test_input)
 #     valSample = spark.read.parquet(val_input)
     
-    valSample.createOrReplaceTempView('valSample')
-    trainSample.createOrReplaceTempView('trainSample')
-    testSample.createOrReplaceTempView('testSample')
+    train_df.createOrReplaceTempView('train_df')
+    test_df.createOrReplaceTempView('test_df')
+    val_df.createOrReplaceTempView('val_df')
 
-#     # StringIndexer to create new columns and dataframes
-    indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
-    indexer_model_1 = indexer_obj_1.fit(trainSample)
-    indexer_df_1 = indexer_model_1.transform(trainSample)
-    print('finised indexer 1 on train')
+# #     # StringIndexer to create new columns and dataframes
+#     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
+#     indexer_model_1 = indexer_obj_1.fit(trainSample)
+#     indexer_df_1 = indexer_model_1.transform(trainSample)
+#     print('finised indexer 1 on train')
 
-    indexer_obj_2 = StringIndexer(inputCol="track_id", outputCol="track_id_numer").setHandleInvalid("keep")
-    indexer_model_2= indexer_obj_2.fit(indexer_df_1)
-    indexer_df_2 = indexer_model_2.transform(indexer_df_1)
-    print('finised indexer 2 on train')
+#     indexer_obj_2 = StringIndexer(inputCol="track_id", outputCol="track_id_numer").setHandleInvalid("keep")
+#     indexer_model_2= indexer_obj_2.fit(indexer_df_1)
+#     indexer_df_2 = indexer_model_2.transform(indexer_df_1)
+#     print('finised indexer 2 on train')
 
-    train_df = indexer_df_2.drop('user_id')
-    train_df= train_df.drop('track_id')
+#     train_df = indexer_df_2.drop('user_id')
+#     train_df= train_df.drop('track_id')
     
-    train_df = train_df.repartition(2000)
+#     train_df = train_df.repartition(2000)
     
-    print('dropped columns in training set')
+#     print('dropped columns in training set')
 
-    val_df_1 = indexer_model_1.transform(valSample)
-    ('transform validation set with indexer 1')
+#     val_df_1 = indexer_model_1.transform(valSample)
+#     ('transform validation set with indexer 1')
     
-    val_df_2= indexer_model_2.transform(val_df_1)
-    ('transform validation set with indexer 2')
+#     val_df_2= indexer_model_2.transform(val_df_1)
+#     ('transform validation set with indexer 2')
 
-    val_df = val_df_2.drop('user_id')
-    val_df= val_df.drop('track_id')
+#     val_df = val_df_2.drop('user_id')
+#     val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(5000)
+#     val_df = val_df.repartition(5000)
 
-    test_df_1 = indexer_model_1.transform(testSample)
-    test_df_2 = indexer_model_2.transform(test_df_1)
+#     test_df_1 = indexer_model_1.transform(testSample)
+#     test_df_2 = indexer_model_2.transform(test_df_1)
 
-    test_df = test_df_2.drop('user_id')
-    test_df = test_df.drop('track_id')
+#     test_df = test_df_2.drop('user_id')
+#     test_df = test_df.drop('track_id')
 
-    test_df = test_df.repartition(5000)
+#     test_df = test_df.repartition(5000)
 
-    #test_df = test_df.checkpoint()
+#     #test_df = test_df.checkpoint()
     
-    print('dropped columns in validation set')
+#     print('dropped columns in validation set')
 
         # Import the requisite items
 
@@ -234,4 +234,4 @@ if __name__ == "__main__":
     
     netID = getpass.getuser()
     
-    main(spark, sc,netID)
+    main(spark, sc, netID)
