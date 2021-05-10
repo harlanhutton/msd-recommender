@@ -16,9 +16,9 @@ def main(spark, sc):
     sc.setCheckpointDir('hdfs:/user/ahh303/checkpoints')
     
     # Read in parquet files
-    train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
-    test_df = spark.read.parquet('hdfs:/user/ahh303/pub/test_df.parquet')
-    val_df = spark.read.parquet('hdfs:/user/ahh303/pub/val_df.parquet')
+    train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df_full.parquet')
+    test_df = spark.read.parquet('hdfs:/user/ahh303/pub/test_df_full.parquet')
+    val_df = spark.read.parquet('hdfs:/user/ahh303/pub/val_df_full.parquet')
 
     train_df.checkpoint()
     test_df.checkpoint()
