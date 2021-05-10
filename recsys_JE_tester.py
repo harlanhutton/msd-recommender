@@ -26,7 +26,9 @@ def main(spark, sc ,user_id):
     test_df = spark.read.parquet('test_df.parquet')
     val_df = spark.read.parquet('val_df.parquet')
     
-      
+    val_df.createOrReplaceTempView('val_df')
+    train_df.createOrReplaceTempView('train_df')
+    test_df.createOrReplaceTempView('test_df')
    
 
         # Import the requisite items
