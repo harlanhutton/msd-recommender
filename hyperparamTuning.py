@@ -16,12 +16,12 @@ import getpass
 def main(spark, sc):
     
     train_df = spark.read.parquet('train_df10hyp.parquet')
-    test_df = spark.read.parquet('test_df10hyp.parquet')
-    val_df = spark.read.parquet('val_df10hyp.parquet')
+    #test_df = spark.read.parquet('test_df10hyp.parquet')
+    #val_df = spark.read.parquet('val_df10hyp.parquet')
 
     train_df.createOrReplaceTempView('train_df')
-    test_df.createOrReplaceTempView('test_df')
-    val_df.createOrReplaceTempView('val_df')
+    #test_df.createOrReplaceTempView('test_df')
+    #val_df.createOrReplaceTempView('val_df')
 
     print('dfs created')
     # Add hyperparameters and their respective values to param_grid
