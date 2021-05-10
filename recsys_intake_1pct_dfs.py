@@ -83,12 +83,12 @@ def main(spark, sc ,user_id):
                          coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.1))
 
 
-    Add hyperparameters and their respective values to param_grid
-    param_grid = ParamGridBuilder() \
-                .addGrid(als.rank, [10, 50, 100, 150]) \
-                .addGrid(als.regParam, [.01, .05, .1, .15]) \
-                .build()
-                #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
+#     Add hyperparameters and their respective values to param_grid
+#     param_grid = ParamGridBuilder() \
+#                 .addGrid(als.rank, [10, 50, 100, 150]) \
+#                 .addGrid(als.regParam, [.01, .05, .1, .15]) \
+#                 .build()
+#                 #             .addGrid(als.maxIter, [5, 50, 100, 200]) \
 
                
     # Define evaluator as RMSE and print length of evaluator
