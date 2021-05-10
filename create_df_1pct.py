@@ -8,9 +8,9 @@ import getpass
 def main(spark):
            
     # read in data
-    trainSample = spark.read.parquet('train_sample1.parquet')
-    testSample = spark.read.parquet('test_sample1.parquet')
-    valSample = spark.read.parquet('val_sample1.parquet')
+    trainSample = spark.read.parquet('train_samplehyp10.parquet')
+    testSample = spark.read.parquet('test_samplehyp10.parquet')
+    valSample = spark.read.parquet('val_samplehyp10.parquet')
     
     valSample.createOrReplaceTempView('valSample')
     trainSample.createOrReplaceTempView('trainSample')
@@ -53,9 +53,9 @@ def main(spark):
 
     test_df = test_df.repartition(5000)
 
-    test_df.write.mode('overwrite').parquet('test_df1.parquet')
-    train_df.write.mode('overwrite').parquet('train_df1.parquet')
-    val_df.write.mode('overwrite').parquet('val_df1.parquet')
+    test_df.write.mode('overwrite').parquet('test_df10hyp.parquet')
+    train_df.write.mode('overwrite').parquet('train_df10hyp.parquet')
+    val_df.write.mode('overwrite').parquet('val_df10hyp.parquet')
 
 
 
