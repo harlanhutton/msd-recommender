@@ -11,6 +11,9 @@ def main(spark):
     trainSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_train.parquet')
     valSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_validation.parquet')
 
+    valSample.createOrReplaceTempView('valSample')
+    trainSample.createOrReplaceTempView('trainSample')
+
 #     # StringIndexer to create new columns and dataframes
     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
     indexer_model_1 = indexer_obj_1.fit(trainSample)
