@@ -20,6 +20,10 @@ def main(spark, sc):
     test_df = spark.read.parquet('hdfs:/user/ahh303/pub/test_df_full.parquet')
     val_df = spark.read.parquet('hdfs:/user/ahh303/pub/val_df_full.parquet')
 
+    train_df.createOrReplaceTempView('train_df')
+    test_df.createOrReplaceTempView('test_df')
+    val_df.createOrReplaceTempView('val_df')
+
     train_df.checkpoint()
     test_df.checkpoint()
     val_df.checkpoint()
