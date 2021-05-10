@@ -15,9 +15,9 @@ import getpass
 
 def main(spark, sc):
     
-    train_df = spark.read.parquet('train_sample10.parquet')
-    test_df = spark.read.parquet('test_sample10.parquet')
-    val_df = spark.read.parquet('val_sample10.parquet')
+    train_df = spark.read.parquet('train_samplehyp10.parquet')
+    test_df = spark.read.parquet('test_samplehyp10.parquet')
+    val_df = spark.read.parquet('val_samplehyp10.parquet')
 
     train_df.createOrReplaceTempView('train_df')
     test_df.createOrReplaceTempView('test_df')
