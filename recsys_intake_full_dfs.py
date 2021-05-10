@@ -17,13 +17,8 @@ def main(spark, sc):
     train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
     test_df = spark.read.parquet('hdfs:/user/ahh303/pub/test_df.parquet')
     val_df = spark.read.parquet('hdfs:/user/ahh303/pub/val_df.parquet')
-    
-    # Create temporary views
-    train_df.createOrReplaceTempView('train_df')
-    test_df.createOrReplaceTempView('test_df')
-    val_df.createOrReplaceTempView('val_df')
 
-    print('views created')
+    print('dfs created')
 
     # Create ALS Model object
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
