@@ -9,7 +9,7 @@ def main(spark, sc, rank, reg, m_iter):
 
     
     # Read in parquet files
-    train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df_full.parquet')
+    train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
     val_df = spark.read.parquet('hdfs:/user/ahh303/pub/val_df_full.parquet')
 
     train_df.createOrReplaceTempView('train_df')
