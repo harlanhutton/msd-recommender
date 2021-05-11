@@ -15,7 +15,7 @@ def main(spark, file_path, pct_sample, netID, new_file_name):
     lines = spark.read.parquet(file_path)
     lines.createOrReplaceTempView('lines')
 
-    df = lines.sample(fraction=flt_pct_samp, seed = 1)
+    df = lines.sample(fraction=flt_pct_samp)
     df.write.mode('overwrite').parquet(f'hdfs:/user/{netID}/{new_file_name}{pct_sample}.parquet')
     
 
