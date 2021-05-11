@@ -35,9 +35,9 @@ if __name__ == "__main__":
     
     # Create the spark session object
     spark = SparkSession.builder.config('spark.executor.instances', '8')\
-    .config('spark.executor.memory', '16g')\
-    .config('spark.driver.memory', '16g')\
-    .config('spark.executor.cores', '3')\
+    .config('spark.executor.memory', '20g')\
+    .config('spark.driver.memory', '20g')\
+    .config('spark.executor.cores', '4')\
     .config('spark.default.parallelism', '48')\
     .appName('sampler').getOrCreate()
     
