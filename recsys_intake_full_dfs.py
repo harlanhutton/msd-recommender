@@ -13,7 +13,7 @@ def main(spark, sc):
 
     print('set up spark context')
 
-    sc.setCheckpointDir('hdfs:/user/jker261/checkpoints')
+    sc.setCheckpointDir('hdfs:/user/ahh303/checkpoints')
     
     # Read in parquet files
     train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df_full.parquet')
