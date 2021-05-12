@@ -38,7 +38,7 @@ def main(spark, sc):
     print("model created")
 
     # Fit model
-    model = als.fit(train_df)
+    best_model = als.fit(train_df)
 
     print("model fitted")
     
