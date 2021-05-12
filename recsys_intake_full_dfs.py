@@ -82,7 +82,7 @@ if __name__ == "__main__":
     .config('spark.executor.memory', '16g')\
     .config('spark.driver.memory', '8g')\
     .config('spark.executor.cores', '3')\
-    .config('spark.default.parallelism', '48')
+    .config('spark.default.parallelism', '48')\
     .appName('sampler').getOrCreate()
     
     # Create spark context
