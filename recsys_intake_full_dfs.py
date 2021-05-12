@@ -13,7 +13,7 @@ def main(spark, sc):
 
     print('set up spark context')
 
-    sc.setCheckpointDir('hdfs:/user/ahh303/checkpoints')
+    #sc.setCheckpointDir('hdfs:/user/ahh303/checkpoints')
     
     # Read in parquet files
     train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df_full.parquet')
@@ -24,9 +24,9 @@ def main(spark, sc):
     test_df.createOrReplaceTempView('test_df')
     val_df.createOrReplaceTempView('val_df')
 
-    train_df.checkpoint()
-    test_df.checkpoint()
-    val_df.checkpoint()
+#     train_df.checkpoint()
+#     test_df.checkpoint()
+#     val_df.checkpoint()
 
     print('dfs created')
 
@@ -56,7 +56,7 @@ def main(spark, sc):
     
     # Create dataframe for true test user listens
     test_true_flatten = test_df.groupby('user_id_numer').agg(func.collect_list('track_id_numer').alias("track_id_numer"))
-    test_true_flatten.checkpoint()
+#     test_true_flatten.checkpoint()
 
     print('test true df created')
  
