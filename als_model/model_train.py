@@ -7,6 +7,8 @@ def main(spark, sc, rank, reg, m_iter):
 
     print('set up spark context')
 
+    sc.setCheckpointDir('hdfs:/user/ahh303/checkpoints')
+
     
     # Read in parquet files
     train_df = spark.read.parquet('hdfs:/user/ahh303/pub/train_df.parquet')
@@ -34,7 +36,7 @@ def main(spark, sc, rank, reg, m_iter):
 if __name__ == "__main__":
     
     # Create the spark session object
-    spark = SparkSession.builder.config('spark.executor.instances', '8')\
+    spark = SparkSession.builder.config('spark.executor.instances', '4')\
     .config('spark.executor.memory', '16g')\
     .config('spark.driver.memory', '4g')\
     .config('spark.executor.cores', '4')\
