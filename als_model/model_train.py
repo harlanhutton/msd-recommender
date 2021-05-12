@@ -19,7 +19,7 @@ def main(spark, sc, rank, reg, m_iter):
 
     # Create ALS Model object
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),regParam=float(reg),maxIter=int(m_iter))
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(rank),regParam=float(reg),maxIter=m_iter)
 
 
     print("model created")
