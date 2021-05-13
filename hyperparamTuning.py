@@ -27,7 +27,7 @@ def main(spark, sc):
     # Add hyperparameters and their respective values to param_grid
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
                          coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.1))
-    param_grid = ParamGridBuilder().addGrid(als.rank, [5,10,15,20]).addGrid(als.regParam,[.01,.1,1]).build()
+    param_grid = ParamGridBuilder().addGrid(als.rank, [50,75,100,125,150,175,200]).addGrid(als.alpha,[1,5,20,40]).build()
     
     
     # Define evaluator as RMSE and print length of evaluator
@@ -52,7 +52,7 @@ def main(spark, sc):
     print("  Rank:", best_model._java_obj.parent().getRank())
     
     # # Print "RegParam"
-    print("  RegParam:", best_model._java_obj.parent().getRegParam())
+    print("  RegParam:", best_model._java_obj.parent().getAlpha())
 
 if __name__ == "__main__":
     # Create the spark session object
