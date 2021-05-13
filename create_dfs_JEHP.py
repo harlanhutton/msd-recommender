@@ -8,13 +8,13 @@ import getpass
 def main(spark):
            
     # read in data
-    trainSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_train.parquet')
-    testSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_test.parquet')
-    valSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_validation.parquet')
+    trainSample = spark.read.parquet('train_sample1.parquet')
+#     testSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_test.parquet')
+#     valSample = spark.read.parquet('hdfs:/user/bm106/pub/MSD/cf_validation.parquet')
     
-    valSample.createOrReplaceTempView('valSample')
+#     valSample.createOrReplaceTempView('valSample')
     trainSample.createOrReplaceTempView('trainSample')
-    testSample.createOrReplaceTempView('testSample')
+#     testSample.createOrReplaceTempView('testSample')
 
 #     # StringIndexer to create new columns and dataframes
     indexer_obj_1 = StringIndexer(inputCol="user_id", outputCol="user_id_numer").setHandleInvalid("keep")
@@ -31,31 +31,31 @@ def main(spark):
     train_df = train_df.drop('track_id')
     train_df = train_df.repartition(5000)
     
-    print('dropped columns in training set')
+#     print('dropped columns in training set')
 
-    val_df_1 = indexer_model_1.transform(valSample)
-    print('transform validation set with indexer 1')
+#     val_df_1 = indexer_model_1.transform(valSample)
+#     print('transform validation set with indexer 1')
     
-    val_df_2= indexer_model_2.transform(val_df_1)
-    print('transform validation set with indexer 2')
+#     val_df_2= indexer_model_2.transform(val_df_1)
+#     print('transform validation set with indexer 2')
 
-    val_df = val_df_2.drop('user_id')
-    val_df= val_df.drop('track_id')
+#     val_df = val_df_2.drop('user_id')
+#     val_df= val_df.drop('track_id')
     
-    val_df = val_df.repartition(5000)
-    #val_df = val_df.checkpoint()
+#     val_df = val_df.repartition(5000)
+#     #val_df = val_df.checkpoint()
 
-    test_df_1 = indexer_model_1.transform(testSample)
-    test_df_2 = indexer_model_2.transform(test_df_1)
+#     test_df_1 = indexer_model_1.transform(testSample)
+#     test_df_2 = indexer_model_2.transform(test_df_1)
 
-    test_df = test_df_2.drop('user_id')
-    test_df = test_df.drop('track_id')
+#     test_df = test_df_2.drop('user_id')
+#     test_df = test_df.drop('track_id')
 
-    test_df = test_df.repartition(5000)
+#     test_df = test_df.repartition(5000)
 
-    test_df.write.mode('overwrite').parquet('test_df.parquet')
+#     test_df.write.mode('overwrite').parquet('test_df.parquet')
     train_df.write.mode('overwrite').parquet('train_df.parquet')
-    val_df.write.mode('overwrite').parquet('val_df.parquet')
+#     val_df.write.mode('overwrite').parquet('val_df.parquet')
 
 
 
