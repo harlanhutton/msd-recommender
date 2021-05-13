@@ -15,7 +15,7 @@ import getpass
 
 def main(spark, sc):
     
-    train_df = spark.read.parquet('train_sample1_df.parquet')
+    train_df = spark.read.parquet('train_df.parquet')
     #test_df = spark.read.parquet('test_df10hyp.parquet')
     #val_df = spark.read.parquet('val_df10hyp.parquet')
 
