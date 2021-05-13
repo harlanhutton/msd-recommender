@@ -32,7 +32,7 @@ def main(spark, sc):
 
     # Create ALS Model object
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=int(30),regParam=float(0.1),maxIter=20)
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(175),regParam=float(0.1),maxIter=20,alpha=20)
 
 
     print("model created")
