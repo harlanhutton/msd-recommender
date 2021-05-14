@@ -52,7 +52,7 @@ def main(spark, sc):
     print("  Rank:", best_model._java_obj.parent().getRank())
     
     # # Print "RegParam"
-    print("  RegParam:", best_model._java_obj.parent().getAlpha())
+    print("  Alpha:", best_model._java_obj.parent().getAlpha())
 
 if __name__ == "__main__":
     # Create the spark session object
