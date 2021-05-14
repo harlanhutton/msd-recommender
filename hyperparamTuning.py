@@ -26,7 +26,7 @@ def main(spark, sc):
     print('dfs created')
     # Add hyperparameters and their respective values to param_grid
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
-                         coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.1))
+                         coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(.001,0.1,1,10))
     param_grid = ParamGridBuilder().addGrid(als.rank, [155,160,170,175,180,190]).addGrid(als.alpha,[10,15,20,25]).build()
     
     
@@ -53,10 +53,13 @@ def main(spark, sc):
     
     # # Print "RegParam"
     print("  Alpha:", best_model._java_obj.parent().getAlpha())
+    
+        # # Print "RegParam"
+    print("  RegParam:", best_model._java_obj.parent().getregParam())
 
 if __name__ == "__main__":
     # Create the spark session object
-    spark = SparkSession.builder.appName('sampler').getOrCreate()
+    spark = SparkSession.builder.appName('hyperparam tuning').getOrCreate()
     
     sc = spark.sparkContext
     
