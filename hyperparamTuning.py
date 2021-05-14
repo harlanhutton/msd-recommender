@@ -27,7 +27,7 @@ def main(spark, sc):
     # Add hyperparameters and their respective values to param_grid
     als = ALS(userCol="user_id_numer",itemCol="track_id_numer",ratingCol="count",
                          coldStartStrategy="drop",implicitPrefs=True,rank=int(20),regParam=float(0.1))
-    param_grid = ParamGridBuilder().addGrid(als.rank, [50,75,100,125,150,175,200]).addGrid(als.alpha,[1,5,20,40]).build()
+    param_grid = ParamGridBuilder().addGrid(als.rank, [155,160,170,175,180,190]).addGrid(als.alpha,[10,15,20,25]).build()
     
     
     # Define evaluator as RMSE and print length of evaluator
